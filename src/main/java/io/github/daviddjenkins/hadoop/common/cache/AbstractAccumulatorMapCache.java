@@ -104,7 +104,6 @@ public abstract class AbstractAccumulatorMapCache<KeyType extends WritableCompar
         ValueType newValue = cache.get(key);
 
         if (newValue != null) {
-            ret = true;
             accumulate(key, value, newValue);
         } else {
             if (cache.size() >= maxCacheSize) {
@@ -118,6 +117,15 @@ public abstract class AbstractAccumulatorMapCache<KeyType extends WritableCompar
             cache.put(newKey, newValue);
         }
         return ret;
+    }
+
+    /**
+     * Returns the size of the cache
+     *
+     * @return size of the cache
+     */
+    public int size() {
+        return this.cache.size();
     }
 
     /**
