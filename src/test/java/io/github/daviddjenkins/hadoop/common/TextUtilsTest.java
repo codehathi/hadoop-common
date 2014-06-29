@@ -185,7 +185,9 @@ public class TextUtilsTest {
         Assert.assertEquals(1, TextUtils.ordinalIndexOf(text_abc, text_toFind3, 1));
         Assert.assertEquals(4, TextUtils.ordinalIndexOf(text_abc, text_toFind3, 2));
         Assert.assertEquals(-1, TextUtils.ordinalIndexOf(text_abc, text_toFind2, 1000, -100));
-
+        Assert.assertEquals(0, TextUtils.ordinalIndexOf(text_abc, text_empty2, 0, 1));
+        Assert.assertEquals(5, TextUtils.ordinalIndexOf(text_abc, text_empty2, 5, 1));
+        Assert.assertEquals(8, TextUtils.ordinalIndexOf(text_abc, text_empty2, 300, 1));
     }
 
     @Test
@@ -307,33 +309,273 @@ public class TextUtilsTest {
     public void TestIndexOfAny() {
         Text text_in = new Text("zzabyycdxx");
         Text text_empty = new Text("");
-        char[] arr1 = new char[]{'z','a'};
-        char[] arr2 = new char[]{'b','y'};
-        char[] arr3 = new char[]{'q'};
+        char[] arr1 = new char[]{ 'z', 'a' };
+        char[] arr2 = new char[]{ 'b', 'y' };
+        char[] arr3 = new char[]{ 'q' };
+
+        Text[] abcd = new Text[]{new Text("ab"), new Text("cd")};
+        Text[] cdab = new Text[]{new Text("cd"), new Text("ab")};
+        Text[] mnop = new Text[]{new Text("mn"), new Text("op")};
+        Text[] zababy = new Text[]{new Text("zab"), new Text("aby")};
+        Text[] empty = new Text[]{new Text("")};
+        Text[] a = new Text[]{new Text("a")};
 
         Assert.assertEquals(-1, TextUtils.indexOfAny(null, arr1));
         Assert.assertEquals(-1, TextUtils.indexOfAny(text_empty, arr1));
-        Assert.assertEquals(-1, TextUtils.indexOfAny(text_in, null));
-        Assert.assertEquals(-1, TextUtils.indexOfAny(text_in, new char[]{}));
+        Assert.assertEquals(-1, TextUtils.indexOfAny(text_in, (char[]) null));
+        Assert.assertEquals(-1, TextUtils.indexOfAny(text_in, new char[]{ }));
         Assert.assertEquals(0, TextUtils.indexOfAny(text_in, arr1));
         Assert.assertEquals(3, TextUtils.indexOfAny(text_in, arr2));
         Assert.assertEquals(-1, TextUtils.indexOfAny(text_in, arr3));
+
+        Assert.assertEquals(-1, TextUtils.indexOfAny(null, abcd));
+        Assert.assertEquals(-1, TextUtils.indexOfAny(text_in, (Text[])null));
+        Assert.assertEquals(-1, TextUtils.indexOfAny(text_in, new Text[]{}));
+        Assert.assertEquals(2, TextUtils.indexOfAny(text_in, abcd));
+        Assert.assertEquals(2, TextUtils.indexOfAny(text_in, cdab));
+        Assert.assertEquals(-1, TextUtils.indexOfAny(text_in, mnop));
+        Assert.assertEquals(1, TextUtils.indexOfAny(text_in, zababy));
+        Assert.assertEquals(0, TextUtils.indexOfAny(text_in, empty));
+        Assert.assertEquals(0, TextUtils.indexOfAny(text_empty, empty));
+        Assert.assertEquals(-1, TextUtils.indexOfAny(text_empty, a));
     }
 
     @Test
     public void TestContainsAny() {
         Text text_in = new Text("zzabyycdxx");
         Text text_empty = new Text("");
-        char[] arr1 = new char[]{'z','a'};
-        char[] arr2 = new char[]{'b','y'};
-        char[] arr3 = new char[]{'q'};
+        char[] arr1 = new char[]{ 'z', 'a' };
+        char[] arr2 = new char[]{ 'b', 'y' };
+        char[] arr3 = new char[]{ 'q' };
 
         Assert.assertEquals(false, TextUtils.containsAny(null, arr1));
         Assert.assertEquals(false, TextUtils.containsAny(text_empty, arr1));
         Assert.assertEquals(false, TextUtils.containsAny(text_in, null));
-        Assert.assertEquals(false, TextUtils.containsAny(text_in, new char[]{}));
+        Assert.assertEquals(false, TextUtils.containsAny(text_in, new char[]{ }));
         Assert.assertEquals(true, TextUtils.containsAny(text_in, arr1));
         Assert.assertEquals(true, TextUtils.containsAny(text_in, arr2));
         Assert.assertEquals(false, TextUtils.containsAny(text_in, arr3));
+    }
+
+    @Test
+    public void TestIndexOfAnyBut() {
+        Text text_in = new Text("zzabyycdxx");
+        Text text_empty = new Text("");
+        Text text_az = new Text("aaaazzzz");
+        char[] arr1 = new char[]{ 'z', 'a' };
+        char[] arr2 = new char[]{ 'b', 'y' };
+        char[] arr3 = new char[]{ 'q' };
+
+        Assert.assertEquals(-1, TextUtils.indexOfAnyBut(null, arr1));
+        Assert.assertEquals(-1, TextUtils.indexOfAnyBut(text_empty, arr1));
+        Assert.assertEquals(-1, TextUtils.indexOfAnyBut(text_in, null));
+        Assert.assertEquals(-1, TextUtils.indexOfAnyBut(text_in, new char[]{ }));
+        Assert.assertEquals(3, TextUtils.indexOfAnyBut(text_in, arr1));
+        Assert.assertEquals(0, TextUtils.indexOfAnyBut(text_in, arr2));
+        Assert.assertEquals(0, TextUtils.indexOfAnyBut(text_in, arr3));
+        Assert.assertEquals(-1, TextUtils.indexOfAnyBut(text_az, arr1));
+    }
+
+    @Test
+    public void TestContainsOnly() {
+        Text test_ab = new Text("ab");
+        Text test_empty = new Text("");
+        Text test_abab = new Text("abab");
+        Text test_ab1 = new Text("ab1");
+        Text test_abz = new Text("abz");
+        char[] abc = new char[]{ 'a', 'b', 'c' };
+        char[] empty = new char[]{ };
+
+        Assert.assertEquals(false, TextUtils.containsOnly(null, abc));
+        Assert.assertEquals(false, TextUtils.containsOnly(test_ab, null));
+        Assert.assertEquals(true, TextUtils.containsOnly(test_empty, abc));
+        Assert.assertEquals(false, TextUtils.containsOnly(test_ab, empty));
+        Assert.assertEquals(true, TextUtils.containsOnly(test_abab, abc));
+        Assert.assertEquals(false, TextUtils.containsOnly(test_ab1, abc));
+        Assert.assertEquals(false, TextUtils.containsOnly(test_abz, abc));
+    }
+
+    @Test
+    public void TestContainsNone() {
+        Text test_ab = new Text("ab");
+        Text test_empty = new Text("");
+        Text test_abab = new Text("abab");
+        Text test_ab1 = new Text("ab1");
+        Text test_abz = new Text("abz");
+        char[] xyz = new char[]{ 'x', 'y', 'z' };
+        char[] empty = new char[]{ };
+
+        Assert.assertEquals(true, TextUtils.containsNone(null, xyz));
+        Assert.assertEquals(true, TextUtils.containsNone(test_ab, null));
+        Assert.assertEquals(true, TextUtils.containsNone(test_empty, xyz));
+        Assert.assertEquals(true, TextUtils.containsNone(test_ab, empty));
+        Assert.assertEquals(true, TextUtils.containsNone(test_abab, xyz));
+        Assert.assertEquals(true, TextUtils.containsNone(test_ab1, xyz));
+        Assert.assertEquals(false, TextUtils.containsNone(test_abz, xyz));
+    }
+
+    @Test
+    public void TestLastIndexOfAny() {
+        Text text_in = new Text("zzabyycdxx");
+        Text text_empty = new Text("");
+
+        Text[] abcd = new Text[]{new Text("ab"), new Text("cd")};
+        Text[] cdab = new Text[]{new Text("cd"), new Text("ab")};
+        Text[] mnop = new Text[]{new Text("mn"), new Text("op")};
+        Text[] mnempty = new Text[]{new Text("mn"), new Text("")};
+        Text[] zababy = new Text[]{new Text("zab"), new Text("aby")};
+        Text[] empty = new Text[]{new Text("")};
+        Text[] arrNull = new Text[]{null};
+        Text[] a = new Text[]{new Text("a")};
+
+        Assert.assertEquals(-1, TextUtils.lastIndexOfAny(null, abcd));
+        Assert.assertEquals(-1, TextUtils.lastIndexOfAny(text_in, null));
+        Assert.assertEquals(-1, TextUtils.lastIndexOfAny(text_in, new Text[]{ }));
+        Assert.assertEquals(-1, TextUtils.lastIndexOfAny(text_in, arrNull));
+        Assert.assertEquals(6, TextUtils.lastIndexOfAny(text_in, abcd));
+        Assert.assertEquals(6, TextUtils.lastIndexOfAny(text_in, cdab));
+        Assert.assertEquals(-1, TextUtils.lastIndexOfAny(text_in, mnop));
+        Assert.assertEquals(10, TextUtils.lastIndexOfAny(text_in, mnempty));
+        Assert.assertEquals(10, TextUtils.lastIndexOfAny(text_in, empty));
+        Assert.assertEquals(0, TextUtils.lastIndexOfAny(text_empty, empty));
+        Assert.assertEquals(-1, TextUtils.lastIndexOfAny(text_empty, a));
+    }
+
+    @Test
+    public void TestSubtext() {
+        Text text_in = new Text("abc");
+        Text text_empty = new Text("");
+
+        Text out = new Text();
+
+        Assert.assertEquals(null, TextUtils.subtext(null, 0, out));
+        Assert.assertEquals("", TextUtils.subtext(text_empty, 0, out).toString());
+        Assert.assertEquals("abc", TextUtils.subtext(text_in, 0, out).toString());
+        Assert.assertEquals("c", TextUtils.subtext(text_in, 2, out).toString());
+        Assert.assertEquals("", TextUtils.subtext(text_in, 4, out).toString());
+        Assert.assertEquals("bc", TextUtils.subtext(text_in, -2, out).toString());
+        Assert.assertEquals("abc", TextUtils.subtext(text_in, -4, out).toString());
+
+        Assert.assertEquals(null, TextUtils.subtext(null, 0, 1, out));
+        Assert.assertEquals("", TextUtils.subtext(text_empty, 0, 1, out).toString());
+        Assert.assertEquals("ab", TextUtils.subtext(text_in, 0, 2, out).toString());
+        Assert.assertEquals("", TextUtils.subtext(text_in, 2, 0, out).toString());
+        Assert.assertEquals("c", TextUtils.subtext(text_in, 2, 4, out).toString());
+        Assert.assertEquals("", TextUtils.subtext(text_in, 4, 6, out).toString());
+        Assert.assertEquals("", TextUtils.subtext(text_in, 2, 2, out).toString());
+        Assert.assertEquals("b", TextUtils.subtext(text_in, -2, -1, out).toString());
+        Assert.assertEquals("ab", TextUtils.subtext(text_in, -4, 2, out).toString());
+
+    }
+
+    @Test
+    public void TestLeftRightMiddle() {
+        Text text_in = new Text("abc");
+        Text text_empty = new Text("");
+
+        Text out = new Text();
+
+        Assert.assertEquals(null, TextUtils.left(null, 0, out));
+        Assert.assertEquals("", TextUtils.left(text_in, -2, out).toString());
+        Assert.assertEquals("", TextUtils.left(text_empty, 10, out).toString());
+        Assert.assertEquals("", TextUtils.left(text_in, 0, out).toString());
+        Assert.assertEquals("ab", TextUtils.left(text_in, 2, out).toString());
+        Assert.assertEquals("abc", TextUtils.left(text_in, 4, out).toString());
+
+        Assert.assertEquals(null, TextUtils.right(null, 0, out));
+        Assert.assertEquals("", TextUtils.right(text_in, -2, out).toString());
+        Assert.assertEquals("", TextUtils.right(text_empty, 10, out).toString());
+        Assert.assertEquals("", TextUtils.right(text_in, 0, out).toString());
+        Assert.assertEquals("bc", TextUtils.right(text_in, 2, out).toString());
+        Assert.assertEquals("abc", TextUtils.right(text_in, 4, out).toString());
+
+        Assert.assertEquals(null, TextUtils.middle(null, 0, 1, out));
+        Assert.assertEquals("", TextUtils.middle(text_in, 0, -1, out).toString());
+        Assert.assertEquals("", TextUtils.middle(text_empty, 0, -1, out).toString());
+        Assert.assertEquals("ab", TextUtils.middle(text_in, 0, 2, out).toString());
+        Assert.assertEquals("abc", TextUtils.middle(text_in, 0, 4, out).toString());
+        Assert.assertEquals("c", TextUtils.middle(text_in, 2, 4, out).toString());
+        Assert.assertEquals("", TextUtils.middle(text_in, 4, 2, out).toString());
+        Assert.assertEquals("ab", TextUtils.middle(text_in, -2, 2, out).toString());
+    }
+
+    @Test
+    public void TestSubtextBeforeAfter() {
+        Text text_in = new Text("abc");
+        Text text_in2 = new Text("abcba");
+        Text text_empty = new Text("");
+        Text a = new Text("a");
+        Text a2 = new Text("a");
+        Text b = new Text("b");
+        Text c = new Text("c");
+        Text d = new Text("d");
+        Text cb = new Text("cb");
+
+        Text out = new Text();
+
+        Assert.assertEquals(null, TextUtils.subtextBefore(null, a, out));
+        Assert.assertEquals("", TextUtils.subtextBefore(text_empty, a, out).toString());
+        Assert.assertEquals("", TextUtils.subtextBefore(text_in, a, out).toString());
+        Assert.assertEquals("a", TextUtils.subtextBefore(text_in2, b, out).toString());
+        Assert.assertEquals("ab", TextUtils.subtextBefore(text_in, c, out).toString());
+        Assert.assertEquals("abc", TextUtils.subtextBefore(text_in, d, out).toString());
+        Assert.assertEquals("", TextUtils.subtextBefore(text_in, text_empty, out).toString());
+        Assert.assertEquals("abc", TextUtils.subtextBefore(text_in, null, out).toString());
+
+        Assert.assertEquals(null, TextUtils.subtextAfter(null, a, out));
+        Assert.assertEquals("", TextUtils.subtextAfter(text_empty, a, out).toString());
+        Assert.assertEquals("", TextUtils.subtextAfter(text_in, null, out).toString());
+        Assert.assertEquals("bc", TextUtils.subtextAfter(text_in, a, out).toString());
+        Assert.assertEquals("cba", TextUtils.subtextAfter(text_in2, b, out).toString());
+        Assert.assertEquals("", TextUtils.subtextAfter(text_in, c, out).toString());
+        Assert.assertEquals("", TextUtils.subtextAfter(text_in, d, out).toString());
+        Assert.assertEquals("a", TextUtils.subtextAfter(text_in2, cb, out).toString());
+        Assert.assertEquals("abc", TextUtils.subtextAfter(text_in, text_empty, out).toString());
+
+        Assert.assertEquals(null, TextUtils.subtextBeforeLast(null, a, out));
+        Assert.assertEquals("", TextUtils.subtextBeforeLast(text_empty, a, out).toString());
+        Assert.assertEquals("abc", TextUtils.subtextBeforeLast(text_in2, b, out).toString());
+        Assert.assertEquals("ab", TextUtils.subtextBeforeLast(text_in, c, out).toString());
+        Assert.assertEquals("abc", TextUtils.subtextBeforeLast(text_in2, b, out).toString());
+        Assert.assertEquals("", TextUtils.subtextBeforeLast(a, a2, out).toString());
+        Assert.assertEquals("a", TextUtils.subtextBeforeLast(a, b, out).toString());
+        Assert.assertEquals("a", TextUtils.subtextBeforeLast(a, null, out).toString());
+        Assert.assertEquals("a", TextUtils.subtextBeforeLast(a, text_empty, out).toString());
+
+        Assert.assertEquals(null, TextUtils.subtextAfterLast(null, a, out));
+        Assert.assertEquals("", TextUtils.subtextAfterLast(text_empty, a, out).toString());
+        Assert.assertEquals("bc", TextUtils.subtextAfterLast(text_in, a, out).toString());
+        Assert.assertEquals("a", TextUtils.subtextAfterLast(text_in2, b, out).toString());
+        Assert.assertEquals("", TextUtils.subtextAfterLast(text_in, c, out).toString());
+        Assert.assertEquals("", TextUtils.subtextAfterLast(a, a2, out).toString());
+        Assert.assertEquals("a", TextUtils.subtextAfterLast(a, b, out).toString());
+        Assert.assertEquals("", TextUtils.subtextAfterLast(a, null, out).toString());
+        Assert.assertEquals("", TextUtils.subtextAfterLast(a, text_empty, out).toString());
+    }
+
+    @Test
+    public void TestSubtextBetween() {
+        Text text_in = new Text("wx[b]yz");
+        Text text_in2 = new Text("yabcz");
+        Text text_in3 = new Text("yabczyabcz");
+        Text left_b = new Text("[");
+        Text right_b = new Text("]");
+        Text empty = new Text("");
+        Text empty2 = new Text("");
+        Text y = new Text("y");
+        Text z = new Text("z");
+
+        Text out = new Text();
+
+        Assert.assertEquals("b", TextUtils.subtextBetween(text_in, left_b, right_b, out).toString());
+        Assert.assertEquals(null, TextUtils.subtextBetween(null, left_b, right_b, out));
+        Assert.assertEquals(null, TextUtils.subtextBetween(text_in, null, right_b, out));
+        Assert.assertEquals(null, TextUtils.subtextBetween(text_in, left_b, null, out));
+        Assert.assertEquals("", TextUtils.subtextBetween(empty, empty2, empty2, out).toString());
+        Assert.assertEquals(null, TextUtils.subtextBetween(empty, empty2, right_b, out));
+        Assert.assertEquals(null, TextUtils.subtextBetween(empty, left_b, right_b, out));
+        Assert.assertEquals("", TextUtils.subtextBetween(text_in2, empty2, empty2, out).toString());
+        Assert.assertEquals("abc", TextUtils.subtextBetween(text_in2, y, z, out).toString());
+        Assert.assertEquals("abc", TextUtils.subtextBetween(text_in3, y, z, out).toString());
     }
 }
