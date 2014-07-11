@@ -122,11 +122,18 @@ public class TextUtilsTest {
         Text text_abc2 = new Text("abc");
         Text text_AbC = new Text("AbC");
         Text text_ABC = new Text("ABC");
+        Text text_1 = new Text("\u00c0\u00e0");
+        Text text_2 = new Text("\u00e0\u00c0");
 
+        Assert.assertEquals(true, TextUtils.equalsIgnoreCase(null, null));
+        Assert.assertEquals(false, TextUtils.equalsIgnoreCase(null, text_2));
+        Assert.assertEquals(false, TextUtils.equalsIgnoreCase(text_1, null));
         Assert.assertEquals(true, TextUtils.equalsIgnoreCase(text_abc, text_abc));
         Assert.assertEquals(true, TextUtils.equalsIgnoreCase(text_abc, text_abc2));
         Assert.assertEquals(true, TextUtils.equalsIgnoreCase(text_abc, text_AbC));
         Assert.assertEquals(true, TextUtils.equalsIgnoreCase(text_abc, text_ABC));
+        Assert.assertEquals(true, TextUtils.equalsIgnoreCase(text_1, text_2));
+        Assert.assertEquals(false, TextUtils.equalsIgnoreCase(text_1, text_abc));
     }
 
     @Test
@@ -137,10 +144,33 @@ public class TextUtilsTest {
         Text text_empty = new Text("");
         Text text_empty2 = new Text("");
 
+        Text text_ascii = new Text("a");
+        Text text_16 = new Text("€");
+        Text text_16_2 = new Text("\u0800");
+        Text text_asciiAnd16 = new Text("ac€\u069A");
+        Text text_16AndAscii = new Text("€a");
+        Text text_a = new Text("a");
+        Text text_b = new Text("a\u0e32asd\u0e32asdf");
 
-        Assert.assertEquals(0, TextUtils.indexOf(text_abc, text_abc.getBytes()[0]));
-        Assert.assertEquals(3, TextUtils.indexOf(text_abc, text_abc.getBytes()[3], 1));
-        Assert.assertEquals(3, TextUtils.indexOf(text_abc, (int) text_abc.getBytes()[3], 1));
+        Assert.assertEquals(-1, TextUtils.indexOf(null, 'a'));
+        Assert.assertEquals(0, TextUtils.indexOf(text_a, 'a'));
+        Assert.assertEquals(-1, TextUtils.indexOf(null, (int) 'a'));
+        Assert.assertEquals(0, TextUtils.indexOf(text_a, (int) 'a'));
+        Assert.assertEquals(-1, TextUtils.indexOf(null, (byte) 'a'));
+        Assert.assertEquals(0, TextUtils.indexOf(text_a, (byte) 'a'));
+        Assert.assertEquals(1, TextUtils.indexOf(text_b, '\u0e32'));
+        Assert.assertEquals(1, TextUtils.indexOf(text_b, (int) '\u0e32'));
+        Assert.assertEquals(1, TextUtils.indexOf(text_b, 0x0e32, 1));
+
+        Assert.assertEquals(-1, TextUtils.indexOf(null, '\u0e32', 1));
+        Assert.assertEquals(1, TextUtils.indexOf(text_b, '\u0e32', 1));
+        Assert.assertEquals(7, TextUtils.indexOf(text_b, 0x0e32, 2));
+        Assert.assertEquals(1, TextUtils.indexOf(text_b, 0x0e32, -2));
+        Assert.assertEquals(-1, TextUtils.indexOf(text_b, 0x0e32, 100));
+
+
+        Assert.assertEquals(0, TextUtils.indexOf(text_abc, (char) text_abc.getBytes()[0]));
+        Assert.assertEquals(3, TextUtils.indexOf(text_abc, (char) text_abc.getBytes()[3], 1));
 
         Assert.assertEquals(-1, TextUtils.indexOf(null, text_abc, 100));
         Assert.assertEquals(-1, TextUtils.indexOf(text_abc, null, 100));
@@ -154,6 +184,19 @@ public class TextUtilsTest {
         Assert.assertEquals(-1, TextUtils.indexOf(null, text_empty, 0));
         Assert.assertEquals(-1, TextUtils.indexOf(null, null, 0));
         Assert.assertEquals(-1, TextUtils.indexOf(text_toFind, text_abc));
+
+        Assert.assertEquals(-1, TextUtils.indexOf(null, 'a'));
+        Assert.assertEquals(0, TextUtils.indexOf(text_ascii, 'a'));
+        Assert.assertEquals(-1, TextUtils.indexOf(text_16, 'a'));
+        Assert.assertEquals(0, TextUtils.indexOf(text_asciiAnd16, 'a'));
+        Assert.assertEquals(3, TextUtils.indexOf(text_16AndAscii, 'a'));
+
+        Assert.assertEquals(0, TextUtils.indexOf(text_16, '€'));
+        Assert.assertEquals(5, TextUtils.indexOf(text_asciiAnd16, 'ښ'));
+        Assert.assertEquals(0, TextUtils.indexOf(text_16AndAscii, '€'));
+
+        Assert.assertEquals(0, TextUtils.indexOf(text_16_2, '\u0800'));
+        Assert.assertEquals(-1, TextUtils.indexOf(text_16_2, 'अ'));
     }
 
     @Test
@@ -164,6 +207,8 @@ public class TextUtilsTest {
         Text text_toFind3 = new Text("ab");
         Text text_empty = new Text("");
         Text text_empty2 = new Text("");
+        Text text_a = new Text("a");
+        Text text_b = new Text("a\u0e32asd\u0e32asdf");
 
         Assert.assertEquals(-1, TextUtils.ordinalIndexOf(null, 'a', 100));
         Assert.assertEquals(1, TextUtils.ordinalIndexOf(text_abc, 'a', 0, 2));
@@ -188,6 +233,19 @@ public class TextUtilsTest {
         Assert.assertEquals(0, TextUtils.ordinalIndexOf(text_abc, text_empty2, 0, 1));
         Assert.assertEquals(5, TextUtils.ordinalIndexOf(text_abc, text_empty2, 5, 1));
         Assert.assertEquals(8, TextUtils.ordinalIndexOf(text_abc, text_empty2, 300, 1));
+
+        Assert.assertEquals(-1, TextUtils.ordinalIndexOf(null, 'a', 1));
+        Assert.assertEquals(0, TextUtils.ordinalIndexOf(text_a, 'a', 1));
+        Assert.assertEquals(-1, TextUtils.ordinalIndexOf(text_a, 'a', 2));
+
+        Assert.assertEquals(1, TextUtils.ordinalIndexOf(text_b, '\u0e32', 1));
+        Assert.assertEquals(7, TextUtils.ordinalIndexOf(text_b, '\u0e32', 2));
+
+        Assert.assertEquals(1, TextUtils.ordinalIndexOf(text_b, (int) '\u0e32', 1));
+        Assert.assertEquals(7, TextUtils.ordinalIndexOf(text_b, (int) '\u0e32', 2));
+        Assert.assertEquals(-1, TextUtils.ordinalIndexOf(text_b, (int) '\u0e32', 3));
+
+        Assert.assertEquals(7, TextUtils.ordinalIndexOf(text_b, (int) '\u0e32', 2, 1));
     }
 
     @Test
@@ -198,6 +256,8 @@ public class TextUtilsTest {
         Text text_toFind3 = new Text("ab");
         Text text_empty = new Text("");
         Text text_empty2 = new Text("");
+        Text text_a = new Text("a");
+        Text text_b = new Text("a\u0e32asd\u0e32asdf");
 
 
         Assert.assertEquals(-1, TextUtils.lastIndexOf(null, 'a', 100));
@@ -223,6 +283,17 @@ public class TextUtilsTest {
         Assert.assertEquals(-1, TextUtils.lastIndexOf(null, text_empty, 0));
         Assert.assertEquals(-1, TextUtils.lastIndexOf(null, null, 0));
         Assert.assertEquals(-1, TextUtils.lastIndexOf(text_toFind, text_abc));
+
+        Assert.assertEquals(0, TextUtils.lastIndexOf(text_a, 'a'));
+        Assert.assertEquals(0, TextUtils.lastIndexOf(text_a, (int) 'a'));
+        Assert.assertEquals(0, TextUtils.lastIndexOf(text_a, (byte) 'a'));
+        Assert.assertEquals(7, TextUtils.lastIndexOf(text_b, '\u0e32'));
+        Assert.assertEquals(7, TextUtils.lastIndexOf(text_b, (int) '\u0e32'));
+        Assert.assertEquals(7, TextUtils.lastIndexOf(text_b, 0x0e32));
+
+        Assert.assertEquals(1, TextUtils.lastIndexOf(text_b, '\u0e32', 1));
+        Assert.assertEquals(1, TextUtils.lastIndexOf(text_b, 0x0e32, 2));
+        Assert.assertEquals(-1, TextUtils.lastIndexOf(text_b, 0x0e32, 0));
     }
 
     @Test
@@ -233,6 +304,8 @@ public class TextUtilsTest {
         Text text_toFind3 = new Text("ab");
         Text text_empty = new Text("");
         Text text_empty2 = new Text("");
+        Text text_a = new Text("a");
+        Text text_b = new Text("a\u0e32asd\u0e32asdf");
 
         Assert.assertEquals(-1, TextUtils.lastOrdinalIndexOf(null, 'a', 100));
         Assert.assertEquals(-1, TextUtils.lastOrdinalIndexOf(text_empty, 'a', 1));
@@ -265,6 +338,22 @@ public class TextUtilsTest {
         Assert.assertEquals(-1, TextUtils.lastOrdinalIndexOf(null, text_empty, 0));
         Assert.assertEquals(-1, TextUtils.lastOrdinalIndexOf(null, null, 0));
         Assert.assertEquals(-1, TextUtils.lastOrdinalIndexOf(text_toFind, text_abc, 1));
+
+        Assert.assertEquals(0, TextUtils.lastOrdinalIndexOf(text_a, 'a', 1));
+        Assert.assertEquals(-1, TextUtils.lastOrdinalIndexOf(text_a, 'a', 2));
+
+        Assert.assertEquals(7, TextUtils.lastOrdinalIndexOf(text_b, '\u0e32', 1));
+        Assert.assertEquals(1, TextUtils.lastOrdinalIndexOf(text_b, '\u0e32', 2));
+
+        Assert.assertEquals(7, TextUtils.lastOrdinalIndexOf(text_b, (int) '\u0e32', 1));
+        Assert.assertEquals(1, TextUtils.lastOrdinalIndexOf(text_b, (int) '\u0e32', 2));
+        Assert.assertEquals(-1, TextUtils.lastOrdinalIndexOf(text_b, (int) '\u0e32', 3));
+
+        Assert.assertEquals(-1, TextUtils.lastOrdinalIndexOf(text_b, (int) '\u0e32', -2));
+
+        Assert.assertEquals(1, TextUtils.lastOrdinalIndexOf(text_b, (int) '\u0e32', 2, 1));
+        Assert.assertEquals(-1, TextUtils.lastOrdinalIndexOf(text_b, (int) '\u0e32', 2, 2));
+        Assert.assertEquals(1, TextUtils.lastOrdinalIndexOf(text_b, (int) '\u0e32', 6, 1));
     }
 
     @Test
@@ -283,8 +372,6 @@ public class TextUtilsTest {
         Assert.assertEquals(true, TextUtils.contains(text_abc, 'b'));
         Assert.assertEquals(false, TextUtils.contains(text_abc, 'c'));
         Assert.assertEquals(false, TextUtils.contains(text_toFind, text_abc));
-        Assert.assertEquals(true, TextUtils.contains(text_abc, (int) 'b'));
-        Assert.assertEquals(false, TextUtils.contains(text_abc, (int) 'c'));
         Assert.assertEquals(true, TextUtils.contains(text_abc, text_toFind));
         Assert.assertEquals(true, TextUtils.contains(text_abc, text_toFind2));
         Assert.assertEquals(true, TextUtils.contains(text_abc, text_toFind3));
@@ -313,12 +400,12 @@ public class TextUtilsTest {
         char[] arr2 = new char[]{ 'b', 'y' };
         char[] arr3 = new char[]{ 'q' };
 
-        Text[] abcd = new Text[]{new Text("ab"), new Text("cd")};
-        Text[] cdab = new Text[]{new Text("cd"), new Text("ab")};
-        Text[] mnop = new Text[]{new Text("mn"), new Text("op")};
-        Text[] zababy = new Text[]{new Text("zab"), new Text("aby")};
-        Text[] empty = new Text[]{new Text("")};
-        Text[] a = new Text[]{new Text("a")};
+        Text[] abcd = new Text[]{ new Text("ab"), new Text("cd") };
+        Text[] cdab = new Text[]{ new Text("cd"), new Text("ab") };
+        Text[] mnop = new Text[]{ new Text("mn"), new Text("op") };
+        Text[] zababy = new Text[]{ new Text("zab"), new Text("aby") };
+        Text[] empty = new Text[]{ new Text("") };
+        Text[] a = new Text[]{ new Text("a") };
 
         Assert.assertEquals(-1, TextUtils.indexOfAny(null, arr1));
         Assert.assertEquals(-1, TextUtils.indexOfAny(text_empty, arr1));
@@ -329,8 +416,8 @@ public class TextUtilsTest {
         Assert.assertEquals(-1, TextUtils.indexOfAny(text_in, arr3));
 
         Assert.assertEquals(-1, TextUtils.indexOfAny(null, abcd));
-        Assert.assertEquals(-1, TextUtils.indexOfAny(text_in, (Text[])null));
-        Assert.assertEquals(-1, TextUtils.indexOfAny(text_in, new Text[]{}));
+        Assert.assertEquals(-1, TextUtils.indexOfAny(text_in, (Text[]) null));
+        Assert.assertEquals(-1, TextUtils.indexOfAny(text_in, new Text[]{ }));
         Assert.assertEquals(2, TextUtils.indexOfAny(text_in, abcd));
         Assert.assertEquals(2, TextUtils.indexOfAny(text_in, cdab));
         Assert.assertEquals(-1, TextUtils.indexOfAny(text_in, mnop));
@@ -358,44 +445,6 @@ public class TextUtilsTest {
     }
 
     @Test
-    public void TestIndexOfAnyBut() {
-        Text text_in = new Text("zzabyycdxx");
-        Text text_empty = new Text("");
-        Text text_az = new Text("aaaazzzz");
-        char[] arr1 = new char[]{ 'z', 'a' };
-        char[] arr2 = new char[]{ 'b', 'y' };
-        char[] arr3 = new char[]{ 'q' };
-
-        Assert.assertEquals(-1, TextUtils.indexOfAnyBut(null, arr1));
-        Assert.assertEquals(-1, TextUtils.indexOfAnyBut(text_empty, arr1));
-        Assert.assertEquals(-1, TextUtils.indexOfAnyBut(text_in, null));
-        Assert.assertEquals(-1, TextUtils.indexOfAnyBut(text_in, new char[]{ }));
-        Assert.assertEquals(3, TextUtils.indexOfAnyBut(text_in, arr1));
-        Assert.assertEquals(0, TextUtils.indexOfAnyBut(text_in, arr2));
-        Assert.assertEquals(0, TextUtils.indexOfAnyBut(text_in, arr3));
-        Assert.assertEquals(-1, TextUtils.indexOfAnyBut(text_az, arr1));
-    }
-
-    @Test
-    public void TestContainsOnly() {
-        Text test_ab = new Text("ab");
-        Text test_empty = new Text("");
-        Text test_abab = new Text("abab");
-        Text test_ab1 = new Text("ab1");
-        Text test_abz = new Text("abz");
-        char[] abc = new char[]{ 'a', 'b', 'c' };
-        char[] empty = new char[]{ };
-
-        Assert.assertEquals(false, TextUtils.containsOnly(null, abc));
-        Assert.assertEquals(false, TextUtils.containsOnly(test_ab, null));
-        Assert.assertEquals(true, TextUtils.containsOnly(test_empty, abc));
-        Assert.assertEquals(false, TextUtils.containsOnly(test_ab, empty));
-        Assert.assertEquals(true, TextUtils.containsOnly(test_abab, abc));
-        Assert.assertEquals(false, TextUtils.containsOnly(test_ab1, abc));
-        Assert.assertEquals(false, TextUtils.containsOnly(test_abz, abc));
-    }
-
-    @Test
     public void TestContainsNone() {
         Text test_ab = new Text("ab");
         Text test_empty = new Text("");
@@ -419,14 +468,14 @@ public class TextUtilsTest {
         Text text_in = new Text("zzabyycdxx");
         Text text_empty = new Text("");
 
-        Text[] abcd = new Text[]{new Text("ab"), new Text("cd")};
-        Text[] cdab = new Text[]{new Text("cd"), new Text("ab")};
-        Text[] mnop = new Text[]{new Text("mn"), new Text("op")};
-        Text[] mnempty = new Text[]{new Text("mn"), new Text("")};
-        Text[] zababy = new Text[]{new Text("zab"), new Text("aby")};
-        Text[] empty = new Text[]{new Text("")};
-        Text[] arrNull = new Text[]{null};
-        Text[] a = new Text[]{new Text("a")};
+        Text[] abcd = new Text[]{ new Text("ab"), new Text("cd") };
+        Text[] cdab = new Text[]{ new Text("cd"), new Text("ab") };
+        Text[] mnop = new Text[]{ new Text("mn"), new Text("op") };
+        Text[] mnempty = new Text[]{ new Text("mn"), new Text("") };
+        Text[] zababy = new Text[]{ new Text("zab"), new Text("aby") };
+        Text[] empty = new Text[]{ new Text("") };
+        Text[] arrNull = new Text[]{ null };
+        Text[] a = new Text[]{ new Text("a") };
 
         Assert.assertEquals(-1, TextUtils.lastIndexOfAny(null, abcd));
         Assert.assertEquals(-1, TextUtils.lastIndexOfAny(text_in, null));
@@ -578,4 +627,401 @@ public class TextUtilsTest {
         Assert.assertEquals("abc", TextUtils.subtextBetween(text_in2, y, z, out).toString());
         Assert.assertEquals("abc", TextUtils.subtextBetween(text_in3, y, z, out).toString());
     }
+
+    @Test
+    public void TestConcat() {
+        Text text_in = new Text("abc");
+        Text text_concat = new Text("_concat");
+
+        Assert.assertEquals("abc_concat", TextUtils.concat(text_in, text_concat).toString());
+        Assert.assertEquals("abc_concat_concat", TextUtils.concat(text_in, text_concat).toString());
+
+    }
+
+    @Test
+    public void TestCountMatches() {
+        Text text_in1 = new Text("abcabcabc");
+        Text text_in2 = new Text("_concat");
+        Text text_in3 = new Text("\u0e21\u0e22\u0e21\u0e21");
+
+        Assert.assertEquals(0, TextUtils.countMatches(null, 'c'));
+        Assert.assertEquals(3, TextUtils.countMatches(text_in1, 'a'));
+        Assert.assertEquals(2, TextUtils.countMatches(text_in2, 'c'));
+        Assert.assertEquals(0, TextUtils.countMatches(text_in2, 'q'));
+        Assert.assertEquals(3, TextUtils.countMatches(text_in3, '\u0e21'));
+
+        Assert.assertEquals(0, TextUtils.countMatches(null, null));
+        Assert.assertEquals(0, TextUtils.countMatches(text_in1, null));
+        Assert.assertEquals(0, TextUtils.countMatches(null, text_in1));
+        Assert.assertEquals(3, TextUtils.countMatches(text_in1, new Text("abc")));
+        Assert.assertEquals(2, TextUtils.countMatches(text_in1, new Text("bca")));
+
+    }
+
+    @Test
+    public void TestLowerCase() {
+        Text text_in1 = new Text("111123abcABCabc");
+        Text text_in2 = new Text("111123abcabcabc");
+        Text text_in3 = new Text("\u0e21\u0e22\u0e21\u0e21");
+        Text text_in5 = new Text("\u00c0\u00c0");
+        Text out = new Text();
+
+        Assert.assertEquals(null, TextUtils.lowerCase(null));
+        Assert.assertEquals(null, TextUtils.lowerCase(null, null));
+        Assert.assertEquals(null, TextUtils.lowerCase(text_in1, null));
+        Assert.assertEquals("111123abcabcabc", TextUtils.lowerCase(text_in1).toString());
+        Assert.assertEquals("111123abcabcabc", TextUtils.lowerCase(text_in2).toString());
+        Assert.assertEquals("\u0e21\u0e22\u0e21\u0e21", TextUtils.lowerCase(text_in3).toString());
+        Assert.assertEquals("\u00e0\u00e0", TextUtils.lowerCase(text_in5).toString());
+
+        Assert.assertEquals("111123abcabcabc", TextUtils.lowerCase(text_in1, out).toString());
+        Assert.assertEquals("111123abcabcabc", out.toString());
+    }
+
+    @Test
+    public void TestUpperCase() {
+        Text text_in1 = new Text("111123abcABCabc");
+        Text text_in2 = new Text("111123abcabcabc");
+        Text text_in3 = new Text("\u0e21\u0e22\u0e21\u0e21");
+        Text text_in5 = new Text("\u00e0\u00e0");
+        Text out = new Text();
+
+        Assert.assertEquals(null, TextUtils.upperCase(null));
+        Assert.assertEquals(null, TextUtils.upperCase(null, null));
+        Assert.assertEquals(null, TextUtils.upperCase(text_in1, null));
+        Assert.assertEquals("111123ABCABCABC", TextUtils.upperCase(text_in1).toString());
+        Assert.assertEquals("111123ABCABCABC", TextUtils.upperCase(text_in2).toString());
+        Assert.assertEquals("\u0e21\u0e22\u0e21\u0e21", TextUtils.upperCase(text_in3).toString());
+        Assert.assertEquals("\u00c0\u00c0", TextUtils.upperCase(text_in5).toString());
+
+        Assert.assertEquals("111123ABCABCABC", TextUtils.upperCase(text_in1, out).toString());
+        Assert.assertEquals("111123ABCABCABC", out.toString());
+    }
+
+    @Test
+    public void TestCapitalize() {
+        Text text_in1 = new Text("abcABCabc");
+        Text text_in2 = new Text("Abcabcabc");
+        Text text_in3 = new Text("\u0e21\u0e22\u0e21\u0e21");
+        Text text_in4 = new Text("111123abcabcabc");
+        Text text_in5 = new Text("\u00e0\u00e0");
+        Text out = new Text();
+
+        Assert.assertEquals(null, TextUtils.capitalize(null));
+        Assert.assertEquals(null, TextUtils.capitalize(null, null));
+        Assert.assertEquals(null, TextUtils.capitalize(text_in1, null));
+        Assert.assertEquals("AbcABCabc", TextUtils.capitalize(text_in1).toString());
+        Assert.assertEquals("Abcabcabc", TextUtils.capitalize(text_in2).toString());
+        Assert.assertEquals("\u0e21\u0e22\u0e21\u0e21", TextUtils.capitalize(text_in3).toString());
+        Assert.assertEquals("\u00c0\u00e0", TextUtils.capitalize(text_in5).toString());
+
+        Assert.assertEquals("111123abcabcabc", TextUtils.capitalize(text_in4, out).toString());
+        Assert.assertEquals("111123abcabcabc", out.toString());
+    }
+
+    @Test
+    public void TestUncapitalize() {
+        Text text_in1 = new Text("abcABCabc");
+        Text text_in2 = new Text("Abcabcabc");
+        Text text_in3 = new Text("\u0e21\u0e22\u0e21\u0e21");
+        Text text_in4 = new Text("111123abcabcabc");
+        Text text_in5 = new Text("\u00c0\u00e0");
+        Text out = new Text();
+
+        Assert.assertEquals(null, TextUtils.uncapitalize(null));
+        Assert.assertEquals(null, TextUtils.uncapitalize(null, null));
+        Assert.assertEquals(null, TextUtils.uncapitalize(text_in1, null));
+        Assert.assertEquals("abcABCabc", TextUtils.uncapitalize(text_in1).toString());
+        Assert.assertEquals("abcabcabc", TextUtils.uncapitalize(text_in2).toString());
+        Assert.assertEquals("\u0e21\u0e22\u0e21\u0e21", TextUtils.uncapitalize(text_in3).toString());
+        Assert.assertEquals("\u00e0\u00e0", TextUtils.uncapitalize(text_in5).toString());
+
+        Assert.assertEquals("111123abcabcabc", TextUtils.uncapitalize(text_in4, out).toString());
+        Assert.assertEquals("111123abcabcabc", out.toString());
+    }
+
+    @Test
+    public void TestSwapCase() {
+        Text text_in1 = new Text("abcABCabc");
+        Text text_in2 = new Text("Abcabcabc");
+        Text text_in3 = new Text("\u0e21\u0e22\u0e21\u0e21");
+        Text text_in4 = new Text("111123abcabcabc");
+        Text text_in5 = new Text("\u00c0\u00e0");
+        Text out = new Text();
+
+        Assert.assertEquals(null, TextUtils.swapCase(null));
+        Assert.assertEquals(null, TextUtils.swapCase(null, null));
+        Assert.assertEquals(null, TextUtils.swapCase(text_in1, null));
+        Assert.assertEquals("ABCabcABC", TextUtils.swapCase(text_in1).toString());
+        Assert.assertEquals("aBCABCABC", TextUtils.swapCase(text_in2).toString());
+        Assert.assertEquals("\u0e21\u0e22\u0e21\u0e21", TextUtils.swapCase(text_in3).toString());
+        Assert.assertEquals("\u00e0\u00c0", TextUtils.swapCase(text_in5).toString());
+
+        Assert.assertEquals("111123ABCABCABC", TextUtils.swapCase(text_in4, out).toString());
+        Assert.assertEquals("111123ABCABCABC", out.toString());
+    }
+
+    @Test
+    public void TestIsAlpha() {
+        Text text_in1 = new Text("abcABCabc");
+        Text text_in2 = new Text("Abcabcabc");
+        Text text_in3 = new Text("\u0e21\u0e22\u0e21\u0e21");
+        Text text_in4 = new Text("111123abcabcabc");
+        Text text_in5 = new Text("\u00c0\u00e0-");
+
+        Assert.assertEquals(false, TextUtils.isAlpha(null));
+        Assert.assertEquals(true, TextUtils.isAlpha(text_in1));
+        Assert.assertEquals(true, TextUtils.isAlpha(text_in2));
+        Assert.assertEquals(true, TextUtils.isAlpha(text_in3));
+        Assert.assertEquals(false, TextUtils.isAlpha(text_in4));
+        Assert.assertEquals(false, TextUtils.isAlpha(text_in5));
+    }
+
+    @Test
+    public void TestIsAlphaSpace() {
+        Text text_in1 = new Text("abcABCabc");
+        Text text_in2 = new Text("Abc abcabc     ");
+        Text text_in3 = new Text("\u0e21\u0e22\u0e21\u0e21");
+        Text text_in4 = new Text("111123abcabcabc");
+        Text text_in5 = new Text("\u00c0\u00e0-");
+        Text empty = new Text("");
+
+        Assert.assertEquals(false, TextUtils.isAlphaSpace(null));
+        Assert.assertEquals(true, TextUtils.isAlphaSpace(empty));
+        Assert.assertEquals(true, TextUtils.isAlphaSpace(text_in1));
+        Assert.assertEquals(true, TextUtils.isAlphaSpace(text_in2));
+        Assert.assertEquals(true, TextUtils.isAlphaSpace(text_in3));
+        Assert.assertEquals(false, TextUtils.isAlphaSpace(text_in4));
+        Assert.assertEquals(false, TextUtils.isAlphaSpace(text_in5));
+    }
+
+    @Test
+    public void TestIsAlphanumeric() {
+        Text text_in1 = new Text("abcABCabc");
+        Text text_in2 = new Text("Abc abcabc     ");
+        Text text_in3 = new Text("\u0e21\u0e22\u0e21\u0e21");
+        Text text_in4 = new Text("111123abcabcabc");
+        Text text_in5 = new Text("\u00c0\u00e0-");
+        Text empty = new Text("");
+
+        Assert.assertEquals(false, TextUtils.isAlphanumeric(null));
+        Assert.assertEquals(false, TextUtils.isAlphanumeric(empty));
+        Assert.assertEquals(true, TextUtils.isAlphanumeric(text_in1));
+        Assert.assertEquals(false, TextUtils.isAlphanumeric(text_in2));
+        Assert.assertEquals(true, TextUtils.isAlphanumeric(text_in3));
+        Assert.assertEquals(true, TextUtils.isAlphanumeric(text_in4));
+        Assert.assertEquals(false, TextUtils.isAlphanumeric(text_in5));
+    }
+
+    @Test
+    public void TestIsAlphanumericSpace() {
+        Text text_in1 = new Text("abcABCabc");
+        Text text_in2 = new Text("Abc abcabc     ");
+        Text text_in3 = new Text("\u0e21\u0e22\u0e21\u0e21");
+        Text text_in4 = new Text("111123ab cabcabc");
+        Text text_in5 = new Text("\u00c0\u00e0-");
+        Text empty = new Text("");
+
+        Assert.assertEquals(false, TextUtils.isAlphanumericSpace(null));
+        Assert.assertEquals(true, TextUtils.isAlphanumericSpace(empty));
+        Assert.assertEquals(true, TextUtils.isAlphanumericSpace(text_in1));
+        Assert.assertEquals(true, TextUtils.isAlphanumericSpace(text_in2));
+        Assert.assertEquals(true, TextUtils.isAlphanumericSpace(text_in3));
+        Assert.assertEquals(true, TextUtils.isAlphanumericSpace(text_in4));
+        Assert.assertEquals(false, TextUtils.isAlphanumericSpace(text_in5));
+    }
+
+    @Test
+    public void TestIsAsciiPrintable() {
+        Text text_in1 = new Text("abcABCabc");
+        Text text_in2 = new Text("Abc abcabc     ");
+        Text text_in3 = new Text("\u0e21\u0e22\u0e21\u0e21");
+        Text text_in4 = new Text("111123ab cabcabc");
+        Text text_in5 = new Text("\u00c0\u00e0-");
+        Text empty = new Text("");
+
+        Assert.assertEquals(false, TextUtils.isAsciiPrintable(null));
+        Assert.assertEquals(true, TextUtils.isAsciiPrintable(empty));
+        Assert.assertEquals(true, TextUtils.isAsciiPrintable(text_in1));
+        Assert.assertEquals(true, TextUtils.isAsciiPrintable(text_in2));
+        Assert.assertEquals(false, TextUtils.isAsciiPrintable(text_in3));
+        Assert.assertEquals(true, TextUtils.isAsciiPrintable(text_in4));
+        Assert.assertEquals(false, TextUtils.isAsciiPrintable(text_in5));
+    }
+
+    @Test
+    public void TestIsNumeric() {
+        Text text_in1 = new Text("123");
+        Text text_in2 = new Text("12.3");
+        Text text_in3 = new Text("\u0967\u0968\u0969");
+        Text text_in4 = new Text("111123ab cabcabc");
+        Text text_in5 = new Text("\u00c0\u00e0-");
+        Text empty = new Text("");
+
+        Assert.assertEquals(false, TextUtils.isNumeric(null));
+        Assert.assertEquals(false, TextUtils.isNumeric(empty));
+        Assert.assertEquals(true, TextUtils.isNumeric(text_in1));
+        Assert.assertEquals(false, TextUtils.isNumeric(text_in2));
+        Assert.assertEquals(true, TextUtils.isNumeric(text_in3));
+        Assert.assertEquals(false, TextUtils.isNumeric(text_in4));
+        Assert.assertEquals(false, TextUtils.isNumeric(text_in5));
+    }
+
+    @Test
+    public void TestIsNumericSpace() {
+        Text text_in1 = new Text("123");
+        Text text_in2 = new Text("12 3");
+        Text text_in3 = new Text("\u0967\u0968\u0969");
+        Text text_in4 = new Text("\u0967 \u0968\u0969");
+        Text text_in5 = new Text("111123ab cabcabc");
+        Text text_in6 = new Text("\u00c0\u00e0-");
+        Text empty = new Text("");
+
+        Assert.assertEquals(false, TextUtils.isNumericSpace(null));
+        Assert.assertEquals(true, TextUtils.isNumericSpace(empty));
+        Assert.assertEquals(true, TextUtils.isNumericSpace(text_in1));
+        Assert.assertEquals(true, TextUtils.isNumericSpace(text_in2));
+        Assert.assertEquals(true, TextUtils.isNumericSpace(text_in3));
+        Assert.assertEquals(true, TextUtils.isNumericSpace(text_in4));
+        Assert.assertEquals(false, TextUtils.isNumericSpace(text_in5));
+        Assert.assertEquals(false, TextUtils.isNumericSpace(text_in6));
+    }
+
+    @Test
+    public void TestIsWhitespace() {
+        Text text_in1 = new Text("     ");
+        Text text_in2 = new Text("12 3");
+        Text text_in3 = new Text("\u0967\u0968\u0969");
+        Text text_in4 = new Text("\u0967 \u0968\u0969");
+        Text text_in5 = new Text("111123ab cabcabc");
+        Text text_in6 = new Text("\u00c0\u00e0-");
+        Text empty = new Text("");
+
+        Assert.assertEquals(false, TextUtils.isWhitespace(null));
+        Assert.assertEquals(true, TextUtils.isWhitespace(empty));
+        Assert.assertEquals(true, TextUtils.isWhitespace(text_in1));
+        Assert.assertEquals(false, TextUtils.isWhitespace(text_in2));
+        Assert.assertEquals(false, TextUtils.isWhitespace(text_in3));
+        Assert.assertEquals(false, TextUtils.isWhitespace(text_in4));
+        Assert.assertEquals(false, TextUtils.isWhitespace(text_in5));
+        Assert.assertEquals(false, TextUtils.isWhitespace(text_in6));
+    }
+
+    @Test
+    public void TestIsAllLowercase() {
+        Text text_in1 = new Text("     ");
+        Text text_in2 = new Text("alskjnkhnkjhbjhbjhgh");
+        Text text_in3 = new Text("askdjhkjhgsdfH");
+        Text text_in4 = new Text("\u0967 \u0968\u0969");
+        Text text_in5 = new Text("111123ab cabcabc");
+        Text text_in6 = new Text("\u00e0\u00e0");
+        Text empty = new Text("");
+
+        Assert.assertEquals(false, TextUtils.isAllLowerCase(null));
+        Assert.assertEquals(false, TextUtils.isAllLowerCase(empty));
+        Assert.assertEquals(false, TextUtils.isAllLowerCase(text_in1));
+        Assert.assertEquals(true, TextUtils.isAllLowerCase(text_in2));
+        Assert.assertEquals(false, TextUtils.isAllLowerCase(text_in3));
+        Assert.assertEquals(false, TextUtils.isAllLowerCase(text_in4));
+        Assert.assertEquals(false, TextUtils.isAllLowerCase(text_in5));
+        Assert.assertEquals(true, TextUtils.isAllLowerCase(text_in6));
+    }
+
+    @Test
+    public void TestIsAllUppercase() {
+        Text text_in1 = new Text("     ");
+        Text text_in2 = new Text("BKJBKLJNLKJNHJGVHJGV");
+        Text text_in3 = new Text("KJNLAKJSNDLFKJNj");
+        Text text_in4 = new Text("\u0967 \u0968\u0969");
+        Text text_in5 = new Text("111123ab cabcabc");
+        Text text_in6 = new Text("\u00C0\u00C0");
+        Text empty = new Text("");
+
+        Assert.assertEquals(false, TextUtils.isAllUpperCase(null));
+        Assert.assertEquals(false, TextUtils.isAllUpperCase(empty));
+        Assert.assertEquals(false, TextUtils.isAllUpperCase(text_in1));
+        Assert.assertEquals(true, TextUtils.isAllUpperCase(text_in2));
+        Assert.assertEquals(false, TextUtils.isAllUpperCase(text_in3));
+        Assert.assertEquals(false, TextUtils.isAllUpperCase(text_in4));
+        Assert.assertEquals(false, TextUtils.isAllUpperCase(text_in5));
+        Assert.assertEquals(true, TextUtils.isAllUpperCase(text_in6));
+
+        System.out.println(text_in6.charAt(0));
+        System.out.println(text_in6.charAt(1));
+        System.out.println(text_in6.charAt(2));
+        System.out.println(text_in6.charAt(3));
+        System.out.println(text_in6.charAt(4));
+        System.out.println(text_in6.getLength());
+    }
+
+    @Test
+    public void TestDifference() {
+        Text text_in1 = new Text("abc");
+        Text text_in2 = new Text("ab");
+        Text text_in3 = new Text("abxyz");
+        Text text_in4 = new Text("abcde");
+        Text text_in5 = new Text("xyz");
+        Text empty1 = new Text("");
+        Text empty2 = new Text("");
+
+        Text text_in6 = new Text("\u00C0\u00C0\u00C0\u00E0");
+        Text text_in7 = new Text("\u00C0\u00C0");
+
+        Text out = new Text("");
+
+        Assert.assertEquals(null, TextUtils.difference(null, null, null));
+        Assert.assertEquals("", TextUtils.difference(empty1, empty2, out).toString());
+        Assert.assertEquals("abc", TextUtils.difference(empty1, text_in1, out).toString());
+        Assert.assertEquals("", TextUtils.difference(text_in1, empty1, out).toString());
+        Assert.assertEquals("", TextUtils.difference(text_in1, text_in1, out).toString());
+        Assert.assertEquals("", TextUtils.difference(text_in1, text_in2, out).toString());
+        Assert.assertEquals("xyz", TextUtils.difference(text_in2, text_in3, out).toString());
+        Assert.assertEquals("xyz", TextUtils.difference(text_in4, text_in3, out).toString());
+        Assert.assertEquals("xyz", TextUtils.difference(text_in4, text_in5, out).toString());
+        Assert.assertEquals("\u00C0\u00E0", TextUtils.difference(text_in7, text_in6, out).toString());
+
+    }
+
+    @Test
+    public void TestCharAt() {
+        Text text_in1 = new Text("abxyz");
+        Text text_in2 = new Text("\u00C0\u00C0");
+
+        Assert.assertEquals(-1, TextUtils.charAt(null, 0));
+        Assert.assertEquals(text_in1.charAt(6), TextUtils.charAt(text_in1, 6));
+
+        for (int i = 0; i < text_in1.getLength(); i++) {
+            Assert.assertEquals(text_in1.charAt(i), TextUtils.charAt(text_in1, i));
+        }
+
+        for (int i = 0; i < text_in2.getLength(); i++) {
+            Assert.assertEquals(text_in2.charAt(i), TextUtils.charAt(text_in2, i));
+        }
+
+    }
+
+
+//    @Test
+//    public void TestNumBytes() {
+//        Text text_in3 = new Text("\u0e21\u0e22\u0e21\u0e21");
+//        Text text_in4 = new Text("111123abcabcabc");
+//
+//        for (int i = 0; i < text_in4.getLength(); i++) {
+//            Assert.assertEquals(1, TextUtils.getNumBytesWithStartingByte(text_in4.getBytes()[i]));
+//        }
+//
+//        for (int i = 0; i < text_in3.getLength(); i++) {
+//            if (i % 3 == 0) {
+//                Assert.assertEquals(3, TextUtils.getNumBytesWithStartingByte(text_in3.getBytes()[i]));
+//            } else {
+//                Assert.assertEquals(-1, TextUtils.getNumBytesWithStartingByte(text_in3.getBytes()[i]));
+//            }
+//        }
+//
+//        Text euro = new Text("¢");
+//
+//        System.out.println(Integer.toHexString(TextUtils.bytesToUnicodeInt(euro.getBytes(), 0)));
+//
+//    }
+
 }
