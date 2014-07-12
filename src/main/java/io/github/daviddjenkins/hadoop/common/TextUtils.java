@@ -1414,7 +1414,7 @@ public class TextUtils {
      * @return the n-th last index of the search Text,
      * {@code -1} ({@code NOT_FOUND}) if no match or {@code null} Text input
      */
-    public static int lasOrdinalIndexOf(final Text in, final char toFind, final int ordinal) {
+    public static int lastOrdinalIndexOf(final Text in, final char toFind, final int ordinal) {
         if (TextUtils.isEmpty(in) || ordinal <= 0) {
             return TextUtils.NOT_FOUND;
         }
