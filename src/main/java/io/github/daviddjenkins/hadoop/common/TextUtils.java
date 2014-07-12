@@ -369,7 +369,7 @@ public class TextUtils {
      * @return the trimmed Text, {@code null} if null Text input
      * @throws java.lang.IllegalArgumentException if output is null
      */
-    public static Text trim(final Text in, Text out) {
+    public static Text trim(final Text in, Text out) throws IllegalArgumentException {
         if (out == null) {
             throw new IllegalArgumentException("out parameter cannot be null");
         }
@@ -406,9 +406,7 @@ public class TextUtils {
      * @param in the Text to be trimmed, may be null
      * @return the trimmed Text, {@code null} if null Text input
      */
-    public static Text trim(Text in) {
-        return removeFrontBackChars(in, CHARTYPE.CONTROL);
-    }
+    public static Text trim(Text in) { return removeFrontBackChars(in, CHARTYPE.CONTROL); }
 
     /**
      * <p>Strips whitespace from the start and end of a Text.</p>
@@ -438,7 +436,7 @@ public class TextUtils {
      * @param out the result of the stripping, may not be null
      * @return the stripped Text, {@code null} if null Text input
      */
-    public static Text strip(final Text in, Text out) {
+    public static Text strip(final Text in, Text out) throws IllegalArgumentException {
         if (out == null) {
             throw new IllegalArgumentException("out parameter cannot be null");
         }
@@ -1983,7 +1981,7 @@ public class TextUtils {
      * this same output is stored in out
      * @throws java.lang.IllegalArgumentException if output is null
      */
-    public static Text subtext(final Text in, int start, Text out) {
+    public static Text subtext(final Text in, int start, Text out) throws IllegalArgumentException {
 
         if (out == null) {
             throw new IllegalArgumentException("out parameter cannot be null");
@@ -2048,7 +2046,7 @@ public class TextUtils {
      * {@code null} if null Text input. this same output is stored in out
      * @throws java.lang.IllegalArgumentException if output is null
      */
-    public static Text subtext(final Text in, int start, int end, Text out) {
+    public static Text subtext(final Text in, int start, int end, Text out) throws IllegalArgumentException {
         if (out == null) {
             throw new IllegalArgumentException("out parameter cannot be null");
         } else if (in == null) {
@@ -2111,7 +2109,7 @@ public class TextUtils {
      * @return the leftmost characters, {@code null} if null Text input
      * @throws java.lang.IllegalArgumentException if output is null
      */
-    public static Text left(final Text in, final int len, Text out) {
+    public static Text left(final Text in, final int len, Text out) throws IllegalArgumentException {
         if (out == null) {
             throw new IllegalArgumentException("out parameter cannot be null");
         } else if (in == null) {
@@ -2153,7 +2151,7 @@ public class TextUtils {
      * @return the rightmost characters, {@code null} if null Text input
      * @throws java.lang.IllegalArgumentException if output is null
      */
-    public static Text right(final Text in, final int len, Text out) {
+    public static Text right(final Text in, final int len, Text out) throws IllegalArgumentException {
         if (out == null) {
             throw new IllegalArgumentException("out parameter cannot be null");
         } else if (in == null) {
@@ -2200,7 +2198,7 @@ public class TextUtils {
      * @return the middle characters, {@code null} if null Text input
      * @throws java.lang.IllegalArgumentException if output is null
      */
-    public static Text middle(final Text in, int pos, final int len, Text out) {
+    public static Text middle(final Text in, int pos, final int len, Text out) throws IllegalArgumentException {
         if (out == null) {
             throw new IllegalArgumentException("out parameter cannot be null");
         } else if (in == null) {
@@ -2255,7 +2253,7 @@ public class TextUtils {
      * {@code null} if null Text input
      * @throws java.lang.IllegalArgumentException if output is null
      */
-    public static Text subtextBefore(final Text in, final Text separator, Text out) {
+    public static Text subtextBefore(final Text in, final Text separator, Text out) throws IllegalArgumentException {
         if (out == null) {
             throw new IllegalArgumentException("out parameter cannot be null");
         } else if (in == null) {
@@ -2307,7 +2305,7 @@ public class TextUtils {
      * {@code null} if null Text input
      * @throws java.lang.IllegalArgumentException if output is null
      */
-    public static Text subtextAfter(final Text in, final Text separator, Text out) {
+    public static Text subtextAfter(final Text in, final Text separator, Text out) throws IllegalArgumentException {
         if (out == null) {
             throw new IllegalArgumentException("out parameter cannot be null");
         } else if (in == null) {
@@ -2360,7 +2358,7 @@ public class TextUtils {
      * {@code null} if null text input
      * @throws java.lang.IllegalArgumentException if output is null
      */
-    public static Text subtextBeforeLast(final Text in, final Text separator, Text out) {
+    public static Text subtextBeforeLast(final Text in, final Text separator, Text out) throws IllegalArgumentException {
         if (out == null) {
             throw new IllegalArgumentException("out parameter cannot be null");
         } else if (in == null) {
@@ -2413,7 +2411,7 @@ public class TextUtils {
      * {@code null} if null text input
      * @throws java.lang.IllegalArgumentException if output is null
      */
-    public static Text subtextAfterLast(final Text in, final Text separator, Text out) {
+    public static Text subtextAfterLast(final Text in, final Text separator, Text out) throws IllegalArgumentException {
         if (out == null) {
             throw new IllegalArgumentException("out parameter cannot be null");
         } else if (in == null) {
@@ -2456,7 +2454,7 @@ public class TextUtils {
      * @return the Text, {@code null} if no match
      * @throws java.lang.IllegalArgumentException if output is null
      */
-    public static Text subtextBetween(final Text in, final Text tag, Text out) {
+    public static Text subtextBetween(final Text in, final Text tag, Text out) throws IllegalArgumentException {
         return subtextBetween(in, tag, tag, out);
     }
 
@@ -2489,7 +2487,7 @@ public class TextUtils {
      * @return the subtext, {@code null} if no match
      * @throws java.lang.IllegalArgumentException if output is null
      */
-    public static Text subtextBetween(final Text in, final Text open, final Text close, Text out) {
+    public static Text subtextBetween(final Text in, final Text open, final Text close, Text out) throws IllegalArgumentException {
         if (out == null) {
             throw new IllegalArgumentException("out parameter cannot be null");
         } else if (in == null || open == null || close == null) {
@@ -2643,7 +2641,17 @@ public class TextUtils {
      * @return the lower cased Text, {@code null} if null Text input
      */
     public static Text lowerCase(Text in) {
-        return lowerCase(in, in);
+        if (in == null) {
+            return null;
+        }
+
+        Text out = null;
+
+        try {
+            out = lowerCase(in, in);
+        } catch (IllegalArgumentException e) {
+        } // this will never happen
+        return out;
     }
 
     /**
@@ -2664,7 +2672,7 @@ public class TextUtils {
      * @param out the Text to store the lower case Text, may be null
      * @return the lower cased Text, {@code null} if null Text input
      */
-    public static Text lowerCase(final Text in, Text out) {
+    public static Text lowerCase(final Text in, Text out) throws IllegalArgumentException {
         if (out == null) {
             throw new IllegalArgumentException("out parameter cannot be null");
         }
@@ -2708,7 +2716,17 @@ public class TextUtils {
      * @return the upper cased Text, {@code null} if null Text input
      */
     public static Text upperCase(Text in) {
-        return upperCase(in, in);
+        if (in == null) {
+            return null;
+        }
+
+        Text out = null;
+
+        try {
+            out = upperCase(in, in);
+        } catch (IllegalArgumentException e) {
+        } // this will never happen
+        return out;
     }
 
     /**
@@ -2718,7 +2736,7 @@ public class TextUtils {
      * <p/>
      * <pre>
      * TextUtils.upperCase(null, * != null)  = ""
-     * TextUtils.upperCase(null, null)  = null
+     * TextUtils.upperCase(null, null)  = throw exception
      * TextUtils.upperCase(*, null)  = null
      * TextUtils.upperCase("", *)    = ""
      * TextUtils.upperCase("aBc", *) = "ABC"
@@ -2729,7 +2747,7 @@ public class TextUtils {
      * @param out the Text to store the upper case Text, may be null
      * @return the upper cased Text, {@code null} if null Text input
      */
-    public static Text upperCase(final Text in, Text out) {
+    public static Text upperCase(final Text in, Text out) throws IllegalArgumentException {
         if (out == null) {
             throw new IllegalArgumentException("out parameter cannot be null");
         }
@@ -2779,7 +2797,17 @@ public class TextUtils {
      * @since 2.0
      */
     public static Text capitalize(Text in) {
-        return capitalize(in, in);
+        if (in == null) {
+            return null;
+        }
+
+        Text out = null;
+
+        try {
+            out = capitalize(in, in);
+        } catch (IllegalArgumentException e) {
+        } // this will never happen
+        return out;
     }
 
     /**
@@ -2805,13 +2833,13 @@ public class TextUtils {
      * @see #uncapitalize(Text)
      * @see #uncapitalize(Text, Text)
      */
-    public static Text capitalize(final Text in, Text out) {
+    public static Text capitalize(final Text in, Text out) throws IllegalArgumentException {
+        if (out == null) {
+            throw new IllegalArgumentException("out parameter cannot be null");
+        }
+
         if (isEmpty(in)) {
-            if (out != null) {
-                out.clear();
-            }
-            return out;
-        } else if (out == null) {
+            out.clear();
             return out;
         }
 
@@ -2850,7 +2878,17 @@ public class TextUtils {
      * @since 2.0
      */
     public static Text uncapitalize(Text in) {
-        return uncapitalize(in, in);
+        if (in == null) {
+            return null;
+        }
+
+        Text out = null;
+
+        try {
+            out = uncapitalize(in, in);
+        } catch (IllegalArgumentException e) {
+        } // this will never happen
+        return out;
     }
 
     /**
@@ -2877,13 +2915,13 @@ public class TextUtils {
      * @see #capitalize(Text, Text)
      * @since 2.0
      */
-    public static Text uncapitalize(final Text in, Text out) {
+    public static Text uncapitalize(final Text in, Text out) throws IllegalArgumentException {
+        if (out == null) {
+            throw new IllegalArgumentException("out parameter cannot be null");
+        }
+
         if (isEmpty(in)) {
-            if (out != null) {
-                out.clear();
-            }
-            return out;
-        } else if (out == null) {
+            out.clear();
             return out;
         }
 
@@ -2923,7 +2961,17 @@ public class TextUtils {
      * @return the changed Text, {@code null} if null Text input
      */
     public static Text swapCase(Text in) {
-        return swapCase(in, in);
+        if (in == null) {
+            return null;
+        }
+
+        Text out = null;
+
+        try {
+            out = swapCase(in, in);
+        } catch (IllegalArgumentException e) {
+        } // this will never happen
+        return out;
     }
 
     /**
@@ -2950,13 +2998,13 @@ public class TextUtils {
      * @param out the Text to store the result, may be null
      * @return the changed Text, {@code null} if null Text input
      */
-    public static Text swapCase(final Text in, Text out) {
+    public static Text swapCase(final Text in, Text out) throws IllegalArgumentException {
+        if (out == null) {
+            throw new IllegalArgumentException("out parameter cannot be null");
+        }
+
         if (isEmpty(in)) {
-            if (out != null) {
-                out.clear();
-            }
-            return out;
-        } else if (out == null) {
+            out.clear();
             return out;
         }
 
@@ -3447,12 +3495,12 @@ public class TextUtils {
      * @return the portion of str2 where it differs from str1; returns the
      * empty Text if they are equal
      * @see #indexOfDifference(Text, Text)
-     * @since 2.0
      */
-    public static Text difference(final Text str1, final Text str2, Text out) {
+    public static Text difference(final Text str1, final Text str2, Text out) throws IllegalArgumentException {
         if (out == null) {
-            return null;
+            throw new IllegalArgumentException("out parameter cannot be null");
         }
+
         if (str1 == null || str2 == null) {
             out.clear();
             return str2;

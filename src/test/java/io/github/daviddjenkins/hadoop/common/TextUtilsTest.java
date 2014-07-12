@@ -667,8 +667,16 @@ public class TextUtilsTest {
         Text out = new Text();
 
         Assert.assertEquals(null, TextUtils.lowerCase(null));
-        Assert.assertEquals(null, TextUtils.lowerCase(null, null));
-        Assert.assertEquals(null, TextUtils.lowerCase(text_in1, null));
+        try {
+            Assert.assertEquals(null, TextUtils.lowerCase(null, null));
+            Assert.fail();
+        } catch (IllegalArgumentException e) {
+        }
+        try {
+            Assert.assertEquals(null, TextUtils.lowerCase(text_in1, null));
+            Assert.fail();
+        } catch (IllegalArgumentException e) {
+        }
         Assert.assertEquals("111123abcabcabc", TextUtils.lowerCase(text_in1).toString());
         Assert.assertEquals("111123abcabcabc", TextUtils.lowerCase(text_in2).toString());
         Assert.assertEquals("\u0e21\u0e22\u0e21\u0e21", TextUtils.lowerCase(text_in3).toString());
@@ -687,8 +695,16 @@ public class TextUtilsTest {
         Text out = new Text();
 
         Assert.assertEquals(null, TextUtils.upperCase(null));
-        Assert.assertEquals(null, TextUtils.upperCase(null, null));
-        Assert.assertEquals(null, TextUtils.upperCase(text_in1, null));
+        try {
+            Assert.assertEquals(null, TextUtils.upperCase(null, null));
+            Assert.fail();
+        } catch (IllegalArgumentException e) {
+        }
+        try {
+            Assert.assertEquals(null, TextUtils.upperCase(text_in1, null));
+            Assert.fail();
+        } catch (IllegalArgumentException e) {
+        }
         Assert.assertEquals("111123ABCABCABC", TextUtils.upperCase(text_in1).toString());
         Assert.assertEquals("111123ABCABCABC", TextUtils.upperCase(text_in2).toString());
         Assert.assertEquals("\u0e21\u0e22\u0e21\u0e21", TextUtils.upperCase(text_in3).toString());
@@ -708,8 +724,16 @@ public class TextUtilsTest {
         Text out = new Text();
 
         Assert.assertEquals(null, TextUtils.capitalize(null));
-        Assert.assertEquals(null, TextUtils.capitalize(null, null));
-        Assert.assertEquals(null, TextUtils.capitalize(text_in1, null));
+        try {
+            Assert.assertEquals(null, TextUtils.capitalize(null, null));
+            Assert.fail();
+        } catch (IllegalArgumentException e) {
+        }
+        try {
+            Assert.assertEquals(null, TextUtils.capitalize(text_in1, null));
+            Assert.fail();
+        } catch (IllegalArgumentException e) {
+        }
         Assert.assertEquals("AbcABCabc", TextUtils.capitalize(text_in1).toString());
         Assert.assertEquals("Abcabcabc", TextUtils.capitalize(text_in2).toString());
         Assert.assertEquals("\u0e21\u0e22\u0e21\u0e21", TextUtils.capitalize(text_in3).toString());
@@ -729,8 +753,16 @@ public class TextUtilsTest {
         Text out = new Text();
 
         Assert.assertEquals(null, TextUtils.uncapitalize(null));
-        Assert.assertEquals(null, TextUtils.uncapitalize(null, null));
-        Assert.assertEquals(null, TextUtils.uncapitalize(text_in1, null));
+        try {
+            Assert.assertEquals(null, TextUtils.uncapitalize(null, null));
+            Assert.fail();
+        } catch (IllegalArgumentException e) {
+        }
+        try {
+            Assert.assertEquals(null, TextUtils.uncapitalize(text_in1, null));
+            Assert.fail();
+        } catch (IllegalArgumentException e) {
+        }
         Assert.assertEquals("abcABCabc", TextUtils.uncapitalize(text_in1).toString());
         Assert.assertEquals("abcabcabc", TextUtils.uncapitalize(text_in2).toString());
         Assert.assertEquals("\u0e21\u0e22\u0e21\u0e21", TextUtils.uncapitalize(text_in3).toString());
@@ -750,8 +782,16 @@ public class TextUtilsTest {
         Text out = new Text();
 
         Assert.assertEquals(null, TextUtils.swapCase(null));
-        Assert.assertEquals(null, TextUtils.swapCase(null, null));
-        Assert.assertEquals(null, TextUtils.swapCase(text_in1, null));
+        try {
+            Assert.assertEquals(null, TextUtils.swapCase(null, null));
+            Assert.fail();
+        } catch (IllegalArgumentException e) {
+        }
+        try {
+            Assert.assertEquals(null, TextUtils.swapCase(text_in1, null));
+            Assert.fail();
+        } catch (IllegalArgumentException e) {
+        }
         Assert.assertEquals("ABCabcABC", TextUtils.swapCase(text_in1).toString());
         Assert.assertEquals("aBCABCABC", TextUtils.swapCase(text_in2).toString());
         Assert.assertEquals("\u0e21\u0e22\u0e21\u0e21", TextUtils.swapCase(text_in3).toString());
@@ -945,13 +985,6 @@ public class TextUtilsTest {
         Assert.assertEquals(false, TextUtils.isAllUpperCase(text_in4));
         Assert.assertEquals(false, TextUtils.isAllUpperCase(text_in5));
         Assert.assertEquals(true, TextUtils.isAllUpperCase(text_in6));
-
-        System.out.println(text_in6.charAt(0));
-        System.out.println(text_in6.charAt(1));
-        System.out.println(text_in6.charAt(2));
-        System.out.println(text_in6.charAt(3));
-        System.out.println(text_in6.charAt(4));
-        System.out.println(text_in6.getLength());
     }
 
     @Test
@@ -969,7 +1002,12 @@ public class TextUtilsTest {
 
         Text out = new Text("");
 
-        Assert.assertEquals(null, TextUtils.difference(null, null, null));
+        Assert.assertEquals(null, TextUtils.difference(null, null, out));
+        try {
+            Assert.assertEquals(null, TextUtils.difference(empty1, empty2, null));
+            Assert.fail();
+        } catch (IllegalArgumentException e) {
+        }
         Assert.assertEquals("", TextUtils.difference(empty1, empty2, out).toString());
         Assert.assertEquals("abc", TextUtils.difference(empty1, text_in1, out).toString());
         Assert.assertEquals("", TextUtils.difference(text_in1, empty1, out).toString());
@@ -979,7 +1017,6 @@ public class TextUtilsTest {
         Assert.assertEquals("xyz", TextUtils.difference(text_in4, text_in3, out).toString());
         Assert.assertEquals("xyz", TextUtils.difference(text_in4, text_in5, out).toString());
         Assert.assertEquals("\u00C0\u00E0", TextUtils.difference(text_in7, text_in6, out).toString());
-
     }
 
     @Test
