@@ -6,18 +6,10 @@ import org.apache.hadoop.io.Text;
  * This class is meant to mimic some of the functionality of the StringUtils library from
  * Apache Commons
  * <a href="https://github.com/apache/commons-lang/blob/trunk/src/main/java/org/apache/commons/lang3/StringUtils.java">[LINK]</a>.
- * <p>Operations on {@link org.apache.hadoop.io.Text} that are {@code null} safe.</p>
- * <p/>
- * <p/>
- * <p>The {@code TextUtils} class defines certain words related to Text handling.</p>
- * <p/>
- * <p/>
  * <p>{@code TextUtils} handles {@code null} input Texts quietly.
  * That is to say that a {@code null} input will return {@code null}.
  * Where a {@code boolean} or {@code int} is being returned
- * details vary by method.</p>
- * <p/>
- * <p>A side effect of the {@code null} handling is that a
+ * details vary by method.  A side effect of the {@code null} handling is that a
  * {@code NullPointerException} should be considered a bug in
  * {@code TextUtils}.</p>
  * <p/>
@@ -57,7 +49,6 @@ public class TextUtils {
      *
      * @param in the Text to check, may be null
      * @return {@code true} if the Text is empty or null
-     * @since 1.0
      */
     public static boolean isEmpty(final Text in) {
         return (in == null || in.getLength() == 0);
@@ -76,7 +67,6 @@ public class TextUtils {
      *
      * @param in the Text to check, may be null
      * @return {@code true} if the Text is not empty and not null
-     * @since 1.0
      */
     public static boolean isNotEmpty(final Text in) {
         return !isEmpty(in);
@@ -97,7 +87,6 @@ public class TextUtils {
      *
      * @param ins the Texts to check, may be null or empty
      * @return {@code true} if any of the Texts are empty or null
-     * @since 1.0
      */
     public static boolean isAnyEmpty(final Text[] ins) {
         if (ins == null || ins.length == 0) {
@@ -128,7 +117,6 @@ public class TextUtils {
      *
      * @param ins the Texts to check, may be null or empty
      * @return {@code true} if none of the Texts are empty or null
-     * @since 1.0
      */
     public static boolean isNoneEmpty(final Text[] ins) {
         return !isAnyEmpty(ins);
@@ -147,7 +135,6 @@ public class TextUtils {
      *
      * @param in the Text to check, may be null
      * @return {@code true} if the Text is null, empty or whitespace
-     * @since 1.0
      */
     public static boolean isBlank(final Text in) {
         if (isEmpty(in)) {
@@ -175,7 +162,6 @@ public class TextUtils {
      * @param in the Text to check, may be null
      * @return {@code true} if the Text is
      * not empty and not null and not whitespace
-     * @since 1.0
      */
     public static boolean isNotBlank(final Text in) {
         return !isBlank(in);
@@ -197,7 +183,6 @@ public class TextUtils {
      *
      * @param ins the Texts to check, may be null or empty
      * @return {@code true} if any of the Texts are blank or null or whitespace only
-     * @since 1.0
      */
     public static boolean isAnyBlank(final Text[] ins) {
         if (ins == null || ins.length == 0) {
@@ -229,7 +214,6 @@ public class TextUtils {
      *
      * @param ins the Texts to check, may be null or empty
      * @return {@code true} if none of the Texts are blank or null or whitespace only
-     * @since 1.0
      */
     public static boolean isNoneBlank(final Text[] ins) {
         return !isAnyBlank(ins);
@@ -2794,7 +2778,6 @@ public class TextUtils {
      * @see #capitalize(Text, Text)
      * @see #uncapitalize(Text)
      * @see #uncapitalize(Text, Text)
-     * @since 2.0
      */
     public static Text capitalize(Text in) {
         if (in == null) {
@@ -2875,7 +2858,6 @@ public class TextUtils {
      * @see #uncapitalize(Text, Text)
      * @see #capitalize(Text)
      * @see #capitalize(Text, Text)
-     * @since 2.0
      */
     public static Text uncapitalize(Text in) {
         if (in == null) {
@@ -2913,7 +2895,6 @@ public class TextUtils {
      * @see #uncapitalize(Text)
      * @see #capitalize(Text)
      * @see #capitalize(Text, Text)
-     * @since 2.0
      */
     public static Text uncapitalize(final Text in, Text out) throws IllegalArgumentException {
         if (out == null) {
